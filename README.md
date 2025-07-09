@@ -951,3 +951,130 @@ curl -X POST \
 | 200  | Success                              |
 | 429  | Too many requests                    |
 | 401  | Unauthorized / Authentication failed |
+
+Wallet Query API
+=====================
+
+**Overview**
+
+The Vault Transaction Query API enables you to check the status of your wallet reservation transaction.
+
+### Sending Rewards Query
+
+Use <span class="method">POST</span> method on this URL:
+```
+http://internal-ipp-vault-prod-elb-1-407892542.ap-southeast-1.elb.amazonaws.com/purse/wallets/<wallet_id>/transactions/<wallet_transaction_id>
+```
+
+###### Representation Format
+
+For the Vault Transaction Query  API, the expected format is application/json.
+
+###### Sample POST Request
+
+```
+curl --location 'http://internal-ipp-vault-prod-elb-1-407892542.ap-southeast-1.elb.amazonaws.com/purse/wallets/1234/transactions/1234556789'
+```
+
+###### Request Body or Payload Parameters
+
+| Parameter        | Usage |
+| -----------------|-------|
+| _string_ **wallet_id** This is the unique identifier of your wallet | Required |
+| _string_ **wallet_transaction_id** This is the returned transaction ID from a successful wallet reservation or charge request | Required |
+
+###### Sample Successful POST Response
+
+```json
+{
+  "id": 1234556789,
+  "vault_id": 1234,
+  "topup_id": 115512,
+  "amount": -1.0,
+  "description": "RESERVE",
+  "status": "COMPLETED",
+  "current_balance": 999999.0,
+  "previous_balance": 1000000.0,
+  "reference_id": null,
+  "created_at": "Thu, 19 Jun 2025 02:30:40 GMT",
+  "updated_at": "Thu, 19 Jun 2025 02:44:02 GMT"
+}
+```
+
+###### Response Parameters
+
+| Parameter 			 | Usage    |
+| -----------------------|----------|
+| _int_ **id** This is the ID of your wallet transaction | |
+| _int_ **vault_id** This is the ID of your wallet | |
+| _int_ **topup_id** This is the ID of your wallet top-up request | |
+| _float_ **amount** This is the amount deducted to your wallet | |
+| _string_ **description** This is the reference of the initiated transaction. Below is the list of wallet actions:<br><ul><li>TOPUP - Added a new amount to the wallet</li><li>CHARGE - Deducted an amount from the wallet</li><li>RESERVE - Initiated a temporary deduction from the wallet</li><li>COMPLETE - Completing the commitment of the temporarily deducted wallet amount</li><li>CANCEL - Refunding the amount temporarily held from the wallet</li></ul> | |
+| _string_ **status** This is the status of the wallet transaction. Below is the list of available transaction statuses:<br><ul><li>PENDING - This is the initial status of the transaction</li><li>COMPLETED - Indicates that the temporary wallet deduction has been finalized</li><li>CANCELLED - Indicates the cancellation of the wallet transaction</li></ul> | |
+| _float_ **current_balance** This is the current available balance of the wallet | |
+| _float_ **previous_balance** This is the previous available balance of the wallet | |
+| _int_ **reference_id** This serves as the reference ID for any related wallet transactions | |
+| _datetime_ **created_at** This is the timestamp when the transaction was created | |
+| _datetime_ **updated_at** This is the timestamp when the transaction was updated | |
+
+Requery API
+=====================
+
+**Overview**
+
+The Load Query API enables you to check the status of your Load API transaction.
+
+### Sending Rewards Query
+
+Use <span class="method">POST</span> method on this URL:
+```
+https://devapi.globelabs.com.ph/rewards/v1/transactions/status
+```
+
+###### Representation Format
+
+For the Globe Labs Load API, the expected format is application/json.
+
+###### Sample POST Request
+
+```
+curl -X POST 'https://devapi.globelabs.com.ph/rewards/v1/transactions/status' \
+--header 'Content-Type: application/json' \
+--data '{
+  "rewardStatusRequest" : {
+    "app_id" : "B54z9Ug55zLh5rTGRT5g6hq64pGUq6ap",
+    "app_secret" : "f6554137d08f5607a696cd40741993758c411af3bb5f6c230270ec26e8d54126",
+    "rewards_token" : "I7SkxKYid_F_p-JSgTejow",
+    "transaction_id" : "123456"
+  }
+}'
+```
+
+###### Request Body or Payload Parameters
+
+| Parameter        | Usage |
+| -----------------|-------|
+| _string_ **app_id** This is the unique identifier of your app | Required |
+| _string_ **app_secret** This is the security code of your app | Required |
+| _string_ **rewards_token** This is used as a key to allow your app to send rewards | Required |
+| _string_ **transaction_id** This is the transaction_id returned from a successful Load API request | Required |
+
+###### Sample Successful POST Response
+
+```json
+{
+  "rewardStatusRequest": {
+      "status": "Approved",
+      "statusCode": 0,
+      "description": "Transaction completed successfully for target MSISDN."
+  }
+}
+```
+
+###### Response Parameters
+
+| Parameter 			 | Usage    |
+| -----------------------|----------|
+| _string_ **status** This is the status of your load API request from the Amax | |
+| _string_ **statusCode** This is the status code returned from the Amax | |
+| _string_ **description** This is the description of the returned status code from the Amax. Below are the possible status codes returned by Amax and their corresponding descriptions:<br><ul><li>0: 'Transaction completed successfully for target MSISDN.'</li><li>1: 'Transaction still in progress for target MSISDN.'</li><li>2: 'Transaction failed for target MSISDN.'</li><li>3: 'Operation failed.'</li></ul> | |
